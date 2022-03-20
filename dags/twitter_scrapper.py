@@ -4,6 +4,7 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 
 from operators.twitter_operator import TwitterOperator
+from operators.postgres_bulkload_operator import PostgresBulkLoadOperator
 from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
 from airflow.operators.postgres_operator import PostgresOperator
 
@@ -66,65 +67,51 @@ with DAG(
         conf={"spark.master":spark_master}
     )
 
-    # tweet_dwh_staging = PostgresBulkLoadOperator(
-    #     task_id="tweet_dwh_staging",
-    #     table_name="twitter_staging.tweet",
-    #     fields=[
-    #         "author_id",
-    #         "conversation_id",
-    #         "created_at",
-    #         "id",
-    #         "in_reply_to_user_id",
-    #         "lang",
-    #         "possibly_sensitive",
-    #         "like_count",
-    #         "quote_count",
-    #         "reply_count",
-    #         "source",
-    #         "text",
-    #         "processed_at",
-    #     ],
-    #     folder=BASE_FOLDER.format(
-    #         stage="silver", partition=f"tweet/{PARTITION_FOLDER}/*.csv"
-    #     ),
-    # )
+    tweet_dwh_staging = PostgresBulkLoadOperator(
+        task_id="tweet_dwh_staging",
+        table_name="twitter_staging.tweet",
+        fields=[
+            "author_id",
+            "conversation_id",
+            "created_at",
+            "id",
+            "in_reply_to_user_id",
+            "like_count",
+            "quote_count",
+            "reply_count",
+            "text",
+            "processed_at",
+        ],
+        folder=BASE_FOLDER.format(
+            stage="silver", partition=f"tweet/{PARTITION_FOLDER}/*.parquet"
+        ),
+    )
 
-    # tweet_dwh_merge = PostgresOperator(
-    #     task_id="tweet_dwh_merge",
-    #     sql="queries/tweet_dwh_merge.sql",
-    # )
+    tweet_dwh_merge = PostgresOperator(
+        task_id="tweet_dwh_merge",
+        sql="queries/tweet_dwh_merge.sql",
+    )
 
-    # user_dwh_staging = PostgresBulkLoadOperator(
-    #     task_id="user_dwh_staging",
-    #     table_name="twitter_staging.user",
-    #     fields=[
-    #         "created_at",
-    #         "description",
-    #         "id",
-    #         "location",
-    #         "name",
-    #         "pinned_tweet_id",
-    #         "profile_image_url",
-    #         "protected",
-    #         "followers_count",
-    #         "following_count",
-    #         "listed_count",
-    #         "tweet_count",
-    #         "url",
-    #         "username",
-    #         "verified",
-    #         "processed_at",
-    #     ],
-    #     folder=BASE_FOLDER.format(
-    #         stage="silver", partition=f"user/{PARTITION_FOLDER}/*.csv"
-    #     ),
-    # )
+    user_dwh_staging = PostgresBulkLoadOperator(
+        task_id="user_dwh_staging",
+        table_name="twitter_staging.user",
+        fields=[
+            "created_at",
+            "id",
+            "name",
+            "username",
+            "processed_at",
+        ],
+        folder=BASE_FOLDER.format(
+            stage="silver", partition=f"user/{PARTITION_FOLDER}/*.parquet"
+        ),
+    )
 
-    # user_dwh_merge = PostgresOperator(
-    #     task_id="user_dwh_merge",
-    #     sql="queries/user_dwh_merge.sql",
-    # )
+    user_dwh_merge = PostgresOperator(
+        task_id="user_dwh_merge",
+        sql="queries/user_dwh_merge.sql",
+    )
 
     twitter_search >> twitter_transform
-    # twitter_transform >> tweet_dwh_staging >> tweet_dwh_merge
-    # twitter_transform >> user_dwh_staging >> user_dwh_merge
+    twitter_transform >> tweet_dwh_staging >> tweet_dwh_merge
+    twitter_transform >> user_dwh_staging >> user_dwh_merge

@@ -32,18 +32,10 @@ class TwitterHook(HttpHook):
 
     def connect_to_endpoint(self, url, session):
         
-            response = requests.Request("GET", url)
-            
-            if response.status_code != 200:
-                if response.status_code == 429:
-                    time.sleep(10)
-                else:
-                    raise Exception(response.status_code, response.text)
-            
-            prep = session.prepare_request(response)
-            self.log.info(f"URL: {url}")
-            return self.run_and_check(session, prep, {}).json()
-
+        response = requests.Request("GET", url)
+        prep = session.prepare_request(response)
+        self.log.info(f"URL: {url}")
+        return self.run_and_check(session, prep, {}).json()     
 
     def paginate(self, url, session, next_token=""):
         if next_token:
