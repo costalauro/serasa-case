@@ -23,12 +23,12 @@ DEFAULT_USER_COLUMNS = [
     "username"
 ]
 
-# [created_at, id, name, username]
-
 
 def export_csv(df: DataFrame, dest: str):
     df.coalesce(1).write.option("header", True).mode("overwrite").csv(dest)
 
+def export_parquet(df: DataFrame, dest: str):
+    df.coalesce(1).write.option("header", True).mode("overwrite").parquet(dest)
 
 def get_first_level(
     df: DataFrame, first_level_col: str, column_list: List[str]
@@ -55,12 +55,12 @@ def twitter_search_transform(
     tweet_df = get_first_level(
         df=df, first_level_col="data", column_list=DEFAULT_TWEET_COLUMNS
     ).withColumn("processed_at", lit(processed_at))
-    export_csv(tweet_df, formatted_dest.format(table_name="tweet"))
+    export_parquet(tweet_df, formatted_dest.format(table_name="tweet"))
 
     user_df = get_first_level(
         df=df, first_level_col="includes.users", column_list=DEFAULT_USER_COLUMNS
     ).withColumn("processed_at", lit(processed_at))
-    export_csv(user_df, formatted_dest.format(table_name="user"))
+    export_parquet(user_df, formatted_dest.format(table_name="user"))
 
 
 if __name__ == "__main__":

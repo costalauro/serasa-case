@@ -11,10 +11,6 @@ from operators.twitter_operator import TwitterOperator
 from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
 from airflow.operators.postgres_operator import PostgresOperator
 
-# from twitter_scrapper_package.twitter_scrapper.auxiliar_classes import TweetFields, UserFields
-
-# from twitter_scrapper_package.twitter_scrapper.tweet_search import TWEET_SEARCH_TIME_FORMAT
-
 TWEET_SEARCH_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.00Z"
 
 ARGS = {
@@ -37,27 +33,6 @@ with DAG(
     schedule_interval="0 7 * * *",
     max_active_runs=1,
 ) as dag:
-    # twitter_search = TwitterOperator(
-    #     task_id="get_twitter_covid",
-    #     query="covid",
-    #     file_path=path.join(
-    #         BASE_FOLDER.format(stage="bronze", partition=PARTITION_FOLDER),
-    #         "Twitter_covid_{{ ts_nodash }}.json",
-    #     ),
-    #     start_time=(
-    #         "{{"
-    #         f" execution_date.strftime('{ TWEET_SEARCH_TIME_FORMAT }') "
-    #         "}}"
-    #     ),
-    #     end_time=(
-    #         "{{"
-    #         f" next_execution_date.strftime('{ TWEET_SEARCH_TIME_FORMAT }') "
-    #         "}}"
-    #     )
-    #     # tweet_fields=TweetFields.activate_public_fields(),
-    #     # user_data=True,
-    #     # user_fields=UserFields.activate_fields(),
-    # )
 
     twitter_search = TwitterOperator(
         task_id="get_twitter_covid",
