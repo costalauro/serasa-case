@@ -2,10 +2,6 @@ from os import path
 from pathlib import Path
 from airflow import DAG
 from airflow.utils.dates import days_ago
-# from .operators.my_plugins import (
-#     TwitterOperator,
-#     PostgresBulkLoadOperator,
-# )
 
 from operators.twitter_operator import TwitterOperator
 from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
