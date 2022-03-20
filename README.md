@@ -10,10 +10,10 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
 ## Arquitetura :P
 
 ### Ambiente Local
-![](doc/arquitetura-case-serasa-local.drawio.png)
+![](docs/arquitetura-case-serasa-local.drawio.png)
 
 ### Arquitetura - TO BE
-![](doc/arquitetura-case-serasa.drawio.png)
+![](docs/arquitetura-case-serasa.drawio.png)
 
 ## 1 - A API do Twitter :)
 

@@ -136,4 +136,5 @@ dags/__pycache__
 .part*
 part-*
 *_SUCCESS*
+*Twitter_*.json
 *.pyc

@@ -5,7 +5,8 @@
 # BASED ON: https://github.com/puckel/docker-airflow
 
 # stretch debian version allows JAVA JDK 8
-FROM python:3.6-stretch
+# FROM python:3.6-stretch
+FROM python:3.7-stretch
 LABEL maintainer="lauro2"
 
 # Never prompts the user for choices on installation/configuration of packages
@@ -29,6 +30,7 @@ ENV LC_CTYPE en_US.UTF-8
 ENV LC_MESSAGES en_US.UTF-8
 
 COPY requirements.txt /requirements.txt
+# COPY twitter_scrapper_package/ /twitter_scrapper_package
 
 RUN set -ex \
     && buildDeps=' \
@@ -63,6 +65,7 @@ RUN set -ex \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
+    # && python twitter_scrapper_package/setup.py install \
     && pip install -r requirements.txt \
     && pip install --use-feature=2020-resolver apache-airflow[crypto,celery,postgres,hive,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
     && pip install 'redis>=2.10.5,<3' \
