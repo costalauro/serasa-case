@@ -6,7 +6,7 @@
 
 # stretch debian version allows JAVA JDK 8
 # FROM python:3.6-stretch
-FROM python:3.7-stretch
+FROM python:3.6-stretch
 LABEL maintainer="lauro2"
 
 # Never prompts the user for choices on installation/configuration of packages
