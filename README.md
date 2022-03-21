@@ -35,7 +35,7 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
         cd ../
         docker-compose up
         docker-compose up -d
-
+        
     3. No docker desktop acessar o a opção browser do conteiner airflow web server
     4. Faça login no airflow usando airflow e airflow no usuário e senha
     5. Adicione uma nova conexão:
