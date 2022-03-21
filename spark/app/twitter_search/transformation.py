@@ -25,10 +25,13 @@ DEFAULT_USER_COLUMNS = [
 
 
 def export_csv(df: DataFrame, dest: str):
-    return df.coalesce(1).write.option("header", True).mode("overwrite").csv(dest)
+    df.show()
+    df.coalesce(1).write.option("header", True).mode("overwrite").csv(dest)
+    
 
 def export_parquet(df: DataFrame, dest: str):
-    return df.coalesce(1).write.option("header", True).mode("overwrite").parquet(dest)
+    df.show()
+    df.coalesce(1).write.option("header", True).mode("overwrite").parquet(dest)
 
 def load_data_to_postgres(df:DataFrame, dt_table: str, postgres_db: str, postgres_user: str, postgres_pwd: str):
     (
@@ -69,8 +72,8 @@ def twitter_search_transform(
 
     tweet_df = get_first_level(
         df=df, first_level_col="data", column_list=DEFAULT_TWEET_COLUMNS
-    ).withColumn("processed_at", lit(processed_at))
-    
+    ).withColumn("processed_at", lit(processed_at))    
+
     export_csv(tweet_df, formatted_dest.format(table_name="tweet"))
     load_data_to_postgres(tweet_df, 'twitter_staging.tweet', postgres_db, postgres_user, postgres_pwd)
 

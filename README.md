@@ -46,39 +46,26 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
         {"Authorization": "Bearer <cole aqui o a string que você salvou anteriormente, você salvou né?  ò-ó> "}
     6. Adicione uma nova conexão:
         conn_id: spark_default
-		Conn Type:
         Host: spark://spark
         Port: 7077
 		Extra: {"queue": "root.default"}
-    
-    psql dwhdb dwhdb
-    \c dwhdb
-    \dt twitter_staging.*
-    select * from twitter_staging.tweet limit 10;
-    select * from twitter_staging.user limit 10;
-    select * from twitter.tweet limit 10;
-    select * from twitter.user limit 10;
-
-    7. Adicione uma nova conexão:
-        conn_id: postgres_dwhdb
+    7.    
+    conn_id: postgres_local
 		Conn Type: Postgres
         Host: postgresdw
         schema: dwhdb
         user: dwhdb
         password: dwhdb
-        Port: 5433
-
-		conn_id: postgres_dwhdb
-		Conn Type: Postgres
-        postgres://dwhdb:dwhdb@postgresdw:5433/dwhdb
-        connection url: jdbc:postgresql://postgresdw/dwhdb
-                        jdbc:postgresql://localhost/test
-        login: dwhdb        
-        password: dwhdb
-        driver path: /usr/local/spark/resources/jars/postgresql-9.4.1207.jar
-        driver class: /usr/local/spark/resources/jars/postgresql-9.4.1207.jar
-
-        postgresql://postgres_user:XXXXXXXXXXXX@1.1.1.1:5432/postgresdb
+    8. Execute a dag ativando o botão de off pra on:
+    ![](docs/arquitetura-case-serasa.drawio.png)
+    9.  Execute os comandos abaixo para verificar se os dados foram criados corretamente no DW 
+        psql dwhdb dwhdb
+        \c dwhdb
+        \dt twitter_staging.*
+        select * from twitter_staging.tweet limit 10;
+        select * from twitter_staging.user limit 10;
+        select * from twitter.tweet limit 10;
+        select * from twitter.user limit 10;
 
 ## Folders
 

@@ -37,7 +37,6 @@ psql -v ON_ERROR_STOP=1 --username "dwhdb" --dbname "dwhdb" <<-EOSQL
 		author_id VARCHAR(20),
 		conversation_id VARCHAR(20),
 		in_reply_to_user_id VARCHAR(20),
-		possibly_sensitive BOOLEAN,
 		like_count BIGINT,
 		quote_count BIGINT,
 		reply_count BIGINT,

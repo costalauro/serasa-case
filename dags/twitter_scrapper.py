@@ -74,54 +74,21 @@ with DAG(
         verbose=1,
         conf={"spark.master":spark_master},
         jars=postgres_driver_jar,
-        driver_class_path=postgres_driver_jar,
-    )
-    tweet_dwh_merge = SparkSubmitOperator(
-        task_id="tweet_dwh_merge",
-        application="/usr/local/spark/app/twitter_search/transformation_dw.py",
-        name="twitter_search_transformation_dw",
-        conn_id="spark_default",
-        application_args=[
-            "--updated_at",
-            "{{ ts_nodash }}",
-            "--postgres_db",
-            postgres_db,
-            "--postgres_user",
-            postgres_user,
-            "--postgres_pwd",
-            postgres_pwd,
-            "--dt_table",
-            "twitter_staging.tweet"
-        ],
-        verbose=1,
-        conf={"spark.master":spark_master},
-        jars=postgres_driver_jar,
-        driver_class_path=postgres_driver_jar,
+        driver_class_path=postgres_driver_jar,   
     )
 
-    user_dwh_merge = SparkSubmitOperator(
-        task_id="user_dwh_merge",
-        application="/usr/local/spark/app/twitter_search/transformation_dw.py",
-        name="twitter_search_transformation_dw",
-        conn_id="spark_default",
-        application_args=[
-            "--updated_at",
-            "{{ ts_nodash }}",
-            "--postgres_db",
-            postgres_db,
-            "--postgres_user",
-            postgres_user,
-            "--postgres_pwd",
-            postgres_pwd,
-            "--dt_table",
-            "twitter_staging.user"
-        ],
-        verbose=1,
-        conf={"spark.master":spark_master},
-        jars=postgres_driver_jar,
-        driver_class_path=postgres_driver_jar,
+    tweet_dwh_merge = PostgresOperator(
+    sql = 'queries/tweet_dwh_merge.sql',
+    task_id = "tweet_dwh_merge",
+    postgres_conn_id = "postgres_local"
     )
 
-    twitter_search >> twitter_transform
+    user_dwh_merge = PostgresOperator(
+    sql = 'queries/user_dwh_merge.sql',
+    task_id = "user_dwh_merge",
+    postgres_conn_id = "postgres_local"
+    )
+
+    twitter_search >> twitter_transform    
     twitter_transform >> tweet_dwh_merge
     twitter_transform >> user_dwh_merge
