@@ -21,7 +21,7 @@
 		created_at TIMESTAMP,				
 		processed_at varchar(30),
 		updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-	);
+	);	
 
 	CREATE SCHEMA twitter_staging;
 

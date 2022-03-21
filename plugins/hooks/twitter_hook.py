@@ -43,6 +43,9 @@ class TwitterHook(HttpHook):
         else:
             full_url = url
         data = self.connect_to_endpoint(full_url, session)
+
+        self.log.info(f"Data: {data}")
+
         yield data
         if "next_token" in data.get("meta", {}):
             yield from self.paginate(url, session, data['meta']['next_token'])

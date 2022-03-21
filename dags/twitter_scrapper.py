@@ -4,7 +4,6 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 
 from operators.twitter_operator import TwitterOperator
-from operators.postgres_bulkload_operator import PostgresBulkLoadOperator
 from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
 from airflow.operators.postgres_operator import PostgresOperator
 
@@ -20,9 +19,12 @@ BASE_FOLDER = path.join(
     "/usr/local/spark/resources/datalake/twitter_scrapper/{stage}/twitter_search/{partition}",
 )
 PARTITION_FOLDER = "exported_date={{ ts_nodash }}"
+
 spark_master = "spark://spark:7077"
-spark_app_name = "Spark Hello World"
-file_path = "/usr/local/spark/resources/data/airflow.cfg"
+postgres_driver_jar = "/usr/local/spark/resources/jars/postgresql-9.4.1207.jar"
+postgres_db = "jdbc:postgresql://postgresdw/dwhdb"
+postgres_user = "dwhdb"
+postgres_pwd = "dwhdb"
 
 with DAG(
     "twitter_scrapper",
@@ -62,56 +64,64 @@ with DAG(
             BASE_FOLDER.format(stage="silver", partition=""),
             "--processed-at",
             "{{ ts_nodash }}",
+            "--postgres_db",
+            postgres_db,
+            "--postgres_user",
+            postgres_user,
+            "--postgres_pwd",
+            postgres_pwd
         ],
         verbose=1,
-        conf={"spark.master":spark_master}
+        conf={"spark.master":spark_master},
+        jars=postgres_driver_jar,
+        driver_class_path=postgres_driver_jar,
     )
-
-    tweet_dwh_staging = PostgresBulkLoadOperator(
-        task_id="tweet_dwh_staging",
-        table_name="twitter_staging.tweet",
-        fields=[
-            "author_id",
-            "conversation_id",
-            "created_at",
-            "id",
-            "in_reply_to_user_id",
-            "like_count",
-            "quote_count",
-            "reply_count",
-            "text",
-            "processed_at",
-        ],
-        folder=BASE_FOLDER.format(
-            stage="silver", partition=f"tweet/{PARTITION_FOLDER}/*.parquet"
-        ),
-    )
-
-    tweet_dwh_merge = PostgresOperator(
+    tweet_dwh_merge = SparkSubmitOperator(
         task_id="tweet_dwh_merge",
-        sql="queries/tweet_dwh_merge.sql",
-    )
-
-    user_dwh_staging = PostgresBulkLoadOperator(
-        task_id="user_dwh_staging",
-        table_name="twitter_staging.user",
-        fields=[
-            "created_at",
-            "id",
-            "name",
-            "username",
-            "processed_at",
+        application="/usr/local/spark/app/twitter_search/transformation_dw.py",
+        name="twitter_search_transformation_dw",
+        conn_id="spark_default",
+        application_args=[
+            "--updated_at",
+            "{{ ts_nodash }}",
+            "--postgres_db",
+            postgres_db,
+            "--postgres_user",
+            postgres_user,
+            "--postgres_pwd",
+            postgres_pwd,
+            "--dt_table",
+            "twitter_staging.tweet"
         ],
-        folder=BASE_FOLDER.format(
-            stage="silver", partition=f"user/{PARTITION_FOLDER}/*.parquet"
-        ),
+        verbose=1,
+        conf={"spark.master":spark_master},
+        jars=postgres_driver_jar,
+        driver_class_path=postgres_driver_jar,
     )
 
-    user_dwh_merge = PostgresOperator(
+    user_dwh_merge = SparkSubmitOperator(
         task_id="user_dwh_merge",
-        sql="queries/user_dwh_merge.sql",
+        application="/usr/local/spark/app/twitter_search/transformation_dw.py",
+        name="twitter_search_transformation_dw",
+        conn_id="spark_default",
+        application_args=[
+            "--updated_at",
+            "{{ ts_nodash }}",
+            "--postgres_db",
+            postgres_db,
+            "--postgres_user",
+            postgres_user,
+            "--postgres_pwd",
+            postgres_pwd,
+            "--dt_table",
+            "twitter_staging.user"
+        ],
+        verbose=1,
+        conf={"spark.master":spark_master},
+        jars=postgres_driver_jar,
+        driver_class_path=postgres_driver_jar,
     )
 
     twitter_search >> twitter_transform
-    twitter_transform >> tweet_dwh_staging >> tweet_dwh_merge
-    twitter_transform >> user_dwh_staging >> user_dwh_merge
+    twitter_transform >> tweet_dwh_merge
+    twitter_transform >> user_dwh_merge
