@@ -7,7 +7,7 @@ psql -v ON_ERROR_STOP=1 --username "dwhdb" --dbname "dwhdb" <<-EOSQL
 
 	CREATE TABLE twitter.tweet (
 		id VARCHAR(20) PRIMARY KEY,
-		text VARCHAR(500),
+		text VARCHAR(10000),
 		created_at TIMESTAMP,
 		author_id VARCHAR(20),
 		conversation_id VARCHAR(20),
@@ -32,7 +32,7 @@ psql -v ON_ERROR_STOP=1 --username "dwhdb" --dbname "dwhdb" <<-EOSQL
 
 	CREATE TABLE twitter_staging.tweet (
 		id VARCHAR(20),
-		text VARCHAR(500),
+		text VARCHAR(10000),
 		created_at TIMESTAMP,
 		author_id VARCHAR(20),
 		conversation_id VARCHAR(20),
