@@ -49,8 +49,8 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
         Host: spark://spark
         Port: 7077
 		Extra: {"queue": "root.default"}
-    7.    
-    conn_id: postgres_local
+    7.  Adicione uma nova conexão:
+        conn_id: postgres_local
 		Conn Type: Postgres
         Host: postgresdw
         schema: dwhdb

@@ -74,14 +74,14 @@ def twitter_search_transform(
         df=df, first_level_col="data", column_list=DEFAULT_TWEET_COLUMNS
     ).withColumn("processed_at", lit(processed_at))    
 
-    export_csv(tweet_df, formatted_dest.format(table_name="tweet"))
+    export_parquet(tweet_df, formatted_dest.format(table_name="tweet"))
     load_data_to_postgres(tweet_df, 'twitter_staging.tweet', postgres_db, postgres_user, postgres_pwd)
 
     user_df = get_first_level(
         df=df, first_level_col="includes.users", column_list=DEFAULT_USER_COLUMNS
     ).withColumn("processed_at", lit(processed_at))
 
-    export_csv(user_df, formatted_dest.format(table_name="user"))
+    export_parquet(user_df, formatted_dest.format(table_name="user"))
     load_data_to_postgres(user_df, 'twitter_staging.user', postgres_db, postgres_user, postgres_pwd)
 
 
