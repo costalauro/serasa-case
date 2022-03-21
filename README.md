@@ -12,8 +12,6 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
 ### Ambiente Local
 ![](docs/arquitetura-case-serasa-local.drawio.png)
 
-### Arquitetura - TO BE
-![](docs/arquitetura-case-serasa.drawio.png)
 
 ## 1 - A API do Twitter :)
 
@@ -36,37 +34,56 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
         docker-compose up
         docker-compose up -d
         
-    3. No docker desktop acessar o a opção browser do conteiner airflow web server
-    4. Faça login no airflow usando airflow e airflow no usuário e senha
+    3. No docker desktop acessar o a opção browser do conteiner airflow web server ou digite http://localhost:8282/
+    4. Faça login no airflow usando airflow e airflow no usuário e senha (se necessário)
     5. Adicione uma nova conexão:
+![](docs/twitter_connection.png)
         conn_id: twitter_default
         Conn Type: http
         Host: https://api.twitter.com
         Extra: 
         {"Authorization": "Bearer <cole aqui o a string que você salvou anteriormente, você salvou né?  ò-ó> "}
     6. Adicione uma nova conexão:
+![](docs/spark_connection.png)
         conn_id: spark_default
         Host: spark://spark
         Port: 7077
 		Extra: {"queue": "root.default"}
     7.  Adicione uma nova conexão:
+![](docs/jdbc-dw.png)
         conn_id: postgres_local
 		Conn Type: Postgres
         Host: postgresdw
         schema: dwhdb
         user: dwhdb
         password: dwhdb
+        
     8. Execute a dag ativando o botão de off pra on:
-    ![](docs/arquitetura-case-serasa.drawio.png)
-    9.  Execute os comandos abaixo para verificar se os dados foram criados corretamente no DW 
+![](docs/dag-execucao.png)
+    9.  Execute os comandos abaixo para verificar se os dados foram criados dentro do conteiner postgresdw na opção CLI
+![](docs/postgrescli.png)
         psql dwhdb dwhdb
-        \c dwhdb
-        \dt twitter_staging.*
-        select * from twitter_staging.tweet limit 10;
-        select * from twitter_staging.user limit 10;
         select * from twitter.tweet limit 10;
+![](docs/tweet.png)
         select * from twitter.user limit 10;
+![](docs/user.png)
+    10. Agora temos 2 tabelas com dados deduplicados e consistentes prontos para consumo por uma api flask, ou uma data viz etc
 
-## Folders
+## 3 - O que faltou:
 
-The following tasks are available on make:
+    1. Testes unitários
+        De certa forma fico tranquilo quanto a falta de testes unitários pois o airflow permite o teste integrado da solução de uma forma muito clara, mas ainda assim acredito que faltou externalizar algumas das funcionalidades em classes/pacotes  com testes para que no futuro pudessem ser utilizadas em outras dags
+    2. API Rest
+        Faltou uma API para consultar o DW postgresql criado, nela poderia rodar um modelo nlp em cima das mensagens do banco
+    3. Data viz/Interatividade
+        Poderia ter serviço local de data viz para visualização gráfica das tabelas, ou algo interativo como o jupyter notebook
+    4. Streaming
+        Poderia ter sido mais desruptivo e ter feito um pipeline que utiliza-se um cluster kafka local, mas isso levaria muito tempo
+    5. Modelagem do DW
+        Faltou :(
+    6. Algo de CI/CD local, talvez simular uma esteira jenkins
+
+## 4 - Deploy em produção:
+    Acredito que a arquitetura abaixo atenda o case perfeitamente:
+## Arquitetura - TO BE
+![](docs/arquitetura-case-serasa.drawio.png)
