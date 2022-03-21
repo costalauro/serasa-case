@@ -1,3 +1,4 @@
+set time zone UTC;
 INSERT INTO twitter.tweet
 (
     id,
@@ -12,8 +13,8 @@ INSERT INTO twitter.tweet
     processed_at
 ) SELECT 
     id,
-    text,
-    created_at,
+    text,    
+    to_timestamp(created_at, 'YYYY-MM-DD HH24:mi:ss')::timestamp created_at,
     author_id,
     conversation_id,
     in_reply_to_user_id,

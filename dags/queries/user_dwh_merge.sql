@@ -1,12 +1,13 @@
+set time zone UTC;
 INSERT INTO twitter.user
-(
+(    
     created_at,
     id,
     name,
     username,
     processed_at
-) SELECT 
-    created_at,
+) SELECT
+    to_timestamp(created_at, 'YYYY-MM-DD HH24:mi:ss')::timestamp created_at,
     id,
     name,    
     username,
