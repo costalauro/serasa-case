@@ -36,20 +36,23 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
         
     3. No docker desktop acessar o a opção browser do conteiner airflow web server ou digite http://localhost:8282/
     4. Faça login no airflow usando airflow e airflow no usuário e senha (se necessário)
-    5. Adicione uma nova conexão:
+    
+    5. Adicione uma nova conexão para o twitter:
 ![](docs/twitter_connection.png)
         conn_id: twitter_default
         Conn Type: http
         Host: https://api.twitter.com
         Extra: 
         {"Authorization": "Bearer <cole aqui o a string que você salvou anteriormente, você salvou né?  ò-ó> "}
-    6. Adicione uma nova conexão:
+
+    6. Adicione uma nova conexão para o spark:
 ![](docs/spark_connection.png)
         conn_id: spark_default
         Host: spark://spark
         Port: 7077
 		Extra: {"queue": "root.default"}
-    7.  Adicione uma nova conexão:
+
+    7.  Adicione uma nova conexão para o postgres dw local:
 ![](docs/jdbc-dw.png)
         conn_id: postgres_local
 		Conn Type: Postgres
