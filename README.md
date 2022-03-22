@@ -59,14 +59,14 @@ Como objetivo final espera-se: um datalake para que seja possível consolidar da
 
         Port: 7077
 
-		Extra: {"queue": "root.default"}
+        Extra: {"queue": "root.default"}
 
     7.  Adicione uma nova conexão para o postgres dw local:
 ![](docs/jdbc-dw.png)
 
         conn_id: postgres_local
 
-		Conn Type: Postgres
+        Conn Type: Postgres
 
         Host: postgresdw
 
